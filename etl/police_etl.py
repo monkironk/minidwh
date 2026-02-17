@@ -36,13 +36,16 @@ def load_police_month(lat: float, lng: float, month: str, set_weather_id: bool =
 
                 # category_dim (unique categoryName)
                 category_name = c["category"]
-                category_id = stable_int_id("cat", category_name)
+               # category_id = stable_int_id("cat", category_name)
 
                 cur.execute("""
-                    INSERT INTO category_dim (categoryID, categoryName)
-                    VALUES (%s, %s)
-                    ON CONFLICT (categoryID) DO NOTHING;
-                """, (category_id, category_name))
+                    INSERT INTO category_dim (categoryName)
+                    VALUES (%s)
+                    ON CONFLICT (categoryName) DO NOTHING;
+                """, (category_name,))
+
+                cur.execute("SELECT categoryID FROM category_dim WHERE categoryName=%s;", (category_name,))
+                category_id = cur.fetchone()[0]
 
                 # location_dim (street id ist quassi die location)
                 loc = c["location"]
